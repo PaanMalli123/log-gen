@@ -95,8 +95,8 @@ if [ "$SAVE_CHOICE" == "SAVE" ]; then
 	fi	
 
 	LAST_CHAR="${SAVE_PATH: -1}"
-	if [ $LAST_CHAR == "/" ]; then
-		SAVE_PATH="${SAVE_PATH%?}"
+	if [ "$LAST_CHAR" == "/" ]; then
+		SAVE_PATH="${SAVE_PATH%/}"
 	fi
 fi
 
@@ -116,10 +116,15 @@ if [ "$SAVE_CHOICE" == "READ" ]; then
 	echo -e "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 	for LOG in "${DESTINATIONS[@]}"; do
 		for kw in "${KEYWORDS[@]}"; do
-			echo -e "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-			echo -e "Logs generated with "$LOG" file using "$kw" keyword."
-			echo -e "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
-			grep "$kw" "$LOG"
+			MATCH_COUNT="$(grep -c "$kw" "$LOG")"
+			if [ "$MATCH_COUNT" -gt 0 ]; then
+				echo -e "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+				echo -e "Logs generated with "$LOG" file using "$kw" keyword."
+				echo -e "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n"
+				grep "$kw" "$LOG"
+			else
+				echo -e "\nNo logs were found in "$LOG" with "$kw" keyword"
+			fi
 		done
 	done
 
@@ -132,11 +137,16 @@ elif [ "$SAVE_CHOICE" == "SAVE" ]; then
 	echo -e "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" >> "$FINAL_FILE"
 	for LOG in "${DESTINATIONS[@]}"; do
 		for kw in "${KEYWORDS[@]}"; do
-			echo -e "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" >> "$FINAL_FILE"
-			echo -e "Logs generated with "$LOG" file using "$kw" keyword." >> "$FINAL_FILE"
-			echo -e "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n" >> "$FINAL_FILE"
-			grep "$kw" "$LOG" >> "$FINAL_FILE"
+			MATCH_COUNT="$(grep -c "$kw" "$LOG")"
+			if [ "$MATCH_COUNT" -gt 0 ]; then
+				echo -e "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~" >> "$FINAL_FILE"
+				echo -e "Logs generated with "$LOG" file using "$kw" keyword.">> "$FINAL_FILE"
+				echo -e "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n">> "$FINAL_FILE"
+				grep "$kw" "$LOG">> "$FINAL_FILE"
+			else
+				echo -e "\nNo logs were found in "$LOG" with "$kw" keyword">> "$FINAL_FILE"
+			fi
 		done
 	done
 	echo -e "\nLog files successfully generated. The file is saved at "$FINAL_FILE""
-fi	
+fi
