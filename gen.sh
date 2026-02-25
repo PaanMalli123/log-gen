@@ -19,7 +19,7 @@ do
 	fi
 	read DEST_NAME
 	if [[ "$DEST_NAME" != "DONE" ]] && [[ ! -f "$DEST_NAME" || ! -r "$DEST_NAME" ]]; then
-		echo -e "\nError. Insufficient read permissions or the file doesn't exit"
+		echo -e "\nError. Insufficient read permissions or the file doesn't exist"
 		echo "Exiting..."
 		exit 1
 	fi
@@ -33,7 +33,7 @@ do
 done
 
 if [ "$DEST_COUNT" -eq 0 ]; then
-	echo -e "\nThe program needs atleast one file path to continue."
+	echo -e "\nThe program needs at least one file path to continue."
 	echo "Exiting..."
 	exit 1
 fi
